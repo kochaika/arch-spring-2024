@@ -16,7 +16,7 @@ statement
 declaration: LET VARIABLE ;
 if: IF LPAREN expression RPAREN LCURLY block RCURLY (ELSE LCURLY block RCURLY)? ;
 
-while: WHILE LPAREN expression RPAREN LCURLY statement* RCURLY ;
+while: WHILE LPAREN expression RPAREN LCURLY block RCURLY ;
 
 print: PRINT LPAREN expression RPAREN ;
 
@@ -60,7 +60,7 @@ EQ : '==' ;
 PRINT : 'print' ;
 
 WS: [ \t\n]+ -> skip ;
-
+COMMENT: '#' .*? '\n' -> skip;
 
 VARIABLE : [a-z]+ ;
 
