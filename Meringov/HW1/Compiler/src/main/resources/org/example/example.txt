@@ -1,0 +1,8 @@
+print(1)
+print(1 AND 0)
+print(0 AND 0)
+print(2 AND 1)
+print(1 AND 1)
+print(0 AND 1)
+print(1 AND 0)
+print(11111 AND 0)
