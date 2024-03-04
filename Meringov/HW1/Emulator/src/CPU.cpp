@@ -43,12 +43,13 @@ const std::unordered_map<FUNCT, instruction> funct_to_r_type_instruction = {
 CPU::CPU()
     : bus() {
     registers[29] = bus.get_memory_size();
+    registers[30] = bus.get_memory_size();
 }
 uint32_t CPU::fetch() {
     return bus.load(PC++);
 }
 void CPU::execute(uint32_t inst) {
-    std::cerr << "inst = " << std::bitset<32>(inst).to_string() << ", " << inst << '\n';
+//    std::cerr << "inst = " << std::bitset<32>(inst).to_string() << ", " << inst << '\n';
     if (inst == 0) {
         return;
     }
@@ -208,6 +209,7 @@ void CPU::BNE(uint32_t inst) {
 void CPU::J(uint32_t inst) {
     std::cerr << "CPU::J" << '\n';
     uint32_t addr = decoding::addr(inst);
+    std::cerr << "J addr = " << (int32_t)utils::SE(addr, 26) << '\n';
     PC += utils::SE(addr, 26);
 }
 void CPU::JR(uint32_t inst) {
@@ -235,7 +237,7 @@ void CPU::SW(uint32_t inst) {
 
     uint32_t offset = utils::SE(imm);
     uint32_t address = registers[rs] + offset;
-    dump_register();
+//    dump_register();
     std::cerr << "$rs -> " << registers[rs] << ", offset = " << offset << '\n';
     std::cerr << "sw -> " << address << '\n';
     bus.save(address, registers[rt]);
@@ -293,7 +295,7 @@ void CPU::SLT(uint32_t inst) {
     uint32_t rs = decoding::rs(inst);
     uint32_t rt = decoding::rt(inst);
 
-    if (registers[rs] < registers[rt]) {
+    if (static_cast<int32_t>(registers[rs]) < static_cast<int32_t>(registers[rt])) {
         registers[rd] = 1;
     } else {
         registers[rd] = 0;
@@ -339,4 +341,5 @@ void CPU::XOR(uint32_t inst) {
 }
 CPU::CPU(const std::vector<uint32_t> &instructions): bus(Bus(instructions)) {
     registers[29] = bus.get_memory_size();
+    registers[30] = bus.get_memory_size();
 }
