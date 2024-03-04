@@ -5,10 +5,15 @@ import MyLangParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
+import kotlin.system.exitProcess
 
-@OptIn(ExperimentalStdlibApi::class)
-fun main() {
-    val lexer = MyLangLexer(object {}.javaClass.getResourceAsStream("example.txt").let { CharStreams.fromStream(it) })
+fun main(args : Array<String>) {
+    if (args.isEmpty()) {
+        println("No input file provided")
+        exitProcess(1)
+    }
+    
+    val lexer = MyLangLexer(CharStreams.fromFileName(args[0]))
     
     val tokens = CommonTokenStream(lexer)
     val parser = MyLangParser(tokens)
