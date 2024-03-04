@@ -9,24 +9,19 @@ class CPU {
     std::array<uint32_t, 32> registers;
     uint32_t PC = 0;  // TODO not 0
 
-
     Bus bus;
-
-
 
 public:
     uint32_t fetch();
     CPU();
     CPU(const std::vector<uint32_t> &instructions);
     inline void dump_register() {
-        for(int i = 0; i < registers.size(); i++) {
+        for (int i = 0; i < registers.size(); i++) {
             std::cerr << "r" << i << " = " << registers[i] << '\n';
         }
     }
     void execute(uint32_t inst);
     void print(uint32_t inst);
-    // I-TYPE
-    void R_TYPE(uint32_t inst);
     void ADDI(uint32_t inst);
     void ANDI(uint32_t inst);
     void ORI(uint32_t inst);

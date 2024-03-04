@@ -4,7 +4,6 @@
 #include <cstdint>
 
 class Bus {
-
     std::array<uint32_t, 1024 * 1024> memory;
 
 public:

@@ -7,7 +7,7 @@ INC=-I./include
 
 
 exec:
-	$(CXX) $(CXXFLAGS) src/CPU.cpp src/main.cpp src/Bus.cpp -o exec
+	$(CXX) $(CXXFLAGS) src/CPU.cpp src/main.cpp src/Bus.cpp -o emulator
 
 all: test exec
 
@@ -18,5 +18,5 @@ test_SE:
 	$(CXX) $(CXXFLAGS) tests/test_SE.cpp -o test_SE
 
 clean:
-	rm exec test_SE 2> /dev/null ; true
+	rm emulator test_SE 2> /dev/null ; true
 

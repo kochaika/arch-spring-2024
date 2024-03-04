@@ -33,7 +33,7 @@ inline uint32_t imm(uint32_t inst) {
 }
 
 inline uint32_t addr(uint32_t inst) {
-    return inst & 0x3ffffff; // bits 25..0
+    return inst & 0x3ffffff;  // bits 25..0
 }
 }  // namespace decoding
 

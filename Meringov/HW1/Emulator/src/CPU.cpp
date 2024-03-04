@@ -49,7 +49,6 @@ uint32_t CPU::fetch() {
     return bus.load(PC++);
 }
 void CPU::execute(uint32_t inst) {
-//    std::cerr << "inst = " << std::bitset<32>(inst).to_string() << ", " << inst << '\n';
     if (inst == 0) {
         return;
     }
@@ -82,11 +81,6 @@ void CPU::print(uint32_t inst) {
     std::cout << static_cast<int32_t>(registers[2]);
 }
 
-void CPU::R_TYPE(uint32_t inst) {
-    std::cerr << "CPU::R_TYPE" << '\n';
-    uint32_t funct = decoding::funct(inst);
-    using enum FUNCT;
-}
 void CPU::ADDI(uint32_t inst) {
     std::cerr << "CPU::ADDI" << '\n';
     uint32_t rs = decoding::rs(inst);
@@ -159,7 +153,6 @@ void CPU::SLTI(uint32_t inst) {
 }
 void CPU::BEQ(uint32_t inst) {
     std::cerr << "CPU::BEQ" << '\n';
-
 
     uint32_t rs = decoding::rs(inst);
     uint32_t rt = decoding::rt(inst);
@@ -237,7 +230,7 @@ void CPU::SW(uint32_t inst) {
 
     uint32_t offset = utils::SE(imm);
     uint32_t address = registers[rs] + offset;
-//    dump_register();
+    //    dump_register();
     std::cerr << "$rs -> " << registers[rs] << ", offset = " << offset << '\n';
     std::cerr << "sw -> " << address << '\n';
     bus.save(address, registers[rt]);
@@ -339,7 +332,8 @@ void CPU::XOR(uint32_t inst) {
 
     registers[rd] = registers[rs] ^ registers[rt];
 }
-CPU::CPU(const std::vector<uint32_t> &instructions): bus(Bus(instructions)) {
+CPU::CPU(const std::vector<uint32_t> &instructions)
+    : bus(instructions) {
     registers[29] = bus.get_memory_size();
     registers[30] = bus.get_memory_size();
 }

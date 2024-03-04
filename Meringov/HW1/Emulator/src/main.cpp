@@ -16,7 +16,6 @@ int main(int argc, char *argv[]) {
 void text(char *filename) {
     std::ifstream file = std::ifstream(filename);
 
-
     std::vector<uint32_t> v;
     while (!file.eof()) {
         std::string line;
@@ -30,21 +29,17 @@ void text(char *filename) {
     while (true) {
         uint32_t inst = cpu.fetch();
 
-        if(inst == 0){
+        if (inst == 0) {
             break;
         }
 
         cpu.execute(inst);
-
     }
-
-    //    cpu.dump_register();
 }
 void binary(char *filename) {
     std::ifstream file = std::ifstream(filename, std::ios_base::binary);
 
     CPU cpu;
-    //    file >> skip;
     while (!file.eof()) {
         uint32_t inst;
         file.read(reinterpret_cast<char *>(&inst), sizeof(inst));

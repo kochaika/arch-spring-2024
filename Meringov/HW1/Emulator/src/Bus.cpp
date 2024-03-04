@@ -12,11 +12,12 @@ void Bus::save(uint32_t addr, uint32_t value) {
 uint32_t Bus::get_memory_size() {
     return memory.size();
 }
-Bus::Bus(): memory() {
-
+Bus::Bus()
+    : memory() {
 }
-Bus::Bus(const std::vector<uint32_t> &instructions): memory() {
-    for(size_t i = 0; i < instructions.size() ; i++) {
+Bus::Bus(const std::vector<uint32_t> &instructions)
+    : memory() {
+    for (size_t i = 0; i < instructions.size(); i++) {
         memory[i] = instructions[i];
     }
 }
