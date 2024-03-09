@@ -8,7 +8,7 @@ use crate::parser::ast::*;
 use nom::Err;
 use nom::error::{Error, ErrorKind};
 use nom::combinator::{map, opt, verify};
-use nom::multi::{many0, separated_list0, separated_list1};
+use nom::multi::{many0, many1, separated_list0, separated_list1};
 use nom::sequence::{delimited, terminated, tuple};
 use crate::parser::ast::Expr::InfixOperation;
 
@@ -45,8 +45,6 @@ fn parse_ident(input: Tokens) -> IResult<Tokens, Ident> {
 }
 
 tag_token!(assign_tag, Token::Assign);
-tag_token!(semicolon_tag, Token::Semicolon);
-tag_token!(eol_tag, Token::EOL);
 tag_token!(lbrace_tag, Token::LeftBrace);
 tag_token!(rbrace_tag, Token::RightBrace);
 tag_token!(lparen_tag, Token::OpenParenthesis);
@@ -193,12 +191,25 @@ fn parse_while(input: Tokens) -> IResult<Tokens, Stmt> {
     )(input)
 }
 
+fn parse_print(input: Tokens) -> IResult<Tokens, Stmt> {
+    map(
+        tuple((
+            print_tag,
+            lbrace_tag,
+            parse_full_expr,
+            rbrace_tag
+        )),
+        |(_, _, expr, _)| Stmt::Print(expr)
+    )(input)
+}
+
 fn parse_stmt(input: Tokens) -> IResult<Tokens, Stmt> {
     alt((
         parse_var_declaration,
         parse_var_assign,
         parse_if,
         parse_while,
+        parse_print
     ))(input)
 }
 
@@ -209,7 +220,7 @@ fn stmt_separator(input: Tokens) -> IResult<Tokens, Tokens> {
 fn parse_block(input: Tokens) -> IResult<Tokens, Block> {
     delimited(lparen_tag,
               delimited(many0(stmt_separator),
-                        separated_list0(stmt_separator, parse_stmt),
+                        separated_list0(many1(stmt_separator), parse_stmt),
                         many0(stmt_separator)),
               rparen_tag,
     )(input)
@@ -217,7 +228,7 @@ fn parse_block(input: Tokens) -> IResult<Tokens, Block> {
 
 pub struct Parser;
 impl Parser {
-    fn parse(tokens: Tokens) -> IResult<Tokens, Block> {
+    pub fn parse(tokens: Tokens) -> IResult<Tokens, Block> {
         terminated(parse_block, eof_tag)(tokens)
     }
 }

@@ -15,7 +15,7 @@ Block — the list of statemented split by newline or semicolon delimited by par
 
 ## Statements
 
-### Variable declaration
+### Variable declaration (DEPRECATED, default values of every variable = 0)
 
 ```
 VAR_DECL := var <VAR_LIST>

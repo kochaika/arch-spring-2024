@@ -84,6 +84,9 @@ impl AstTransformer {
     }
 
     fn transform_block_to_sm(&mut self, label: Label, program: &Block) -> (bool, LinkedList<StackCommand>) {
+        if program.is_empty() {
+            return (false, LinkedList::new())
+        }
         let mut result = LinkedList::new();
         for i in 0..(program.len() - 1) {
             let after_stmt = self.generate_label();
