@@ -88,4 +88,6 @@ $rt = Mem($rs + imm)
 ```
 Mem($rs + imm) = $rt
 ```
+`opcode = 43`
+
 
