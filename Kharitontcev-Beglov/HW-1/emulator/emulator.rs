@@ -1,4 +1,4 @@
-const MEMORY_SIZE: usize = 1024 * 1024;
+pub const MEMORY_SIZE: usize = 1024 * 1024;
 const REGISTERS_SIZE: usize = 32;
 
 struct ALU {
@@ -376,7 +376,7 @@ impl Emulator {
         self.fsm.reset();
     }
 
-    pub fn clock(&mut self) {
+    pub fn clock(&mut self) -> bool {
         let decision = self.fsm.get_decision();
 
         let address = if decision.iord {
@@ -436,6 +436,7 @@ impl Emulator {
             };
         }
         self.alu_output = result;
+        self.pc >= self.commands.len()
     }
 
     fn read(&self, address: &ReadMemoryFrom) -> i32 {
