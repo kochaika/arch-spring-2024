@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 use crate::parser::ast::{Ident, Ops};
 
 #[derive(Clone, Debug)]
-pub enum StackCommands {
+pub enum StackCommand {
     Print,
     Op(Ops),
     Load(Ident),
@@ -12,7 +12,7 @@ pub enum StackCommands {
     Jmp(Label),
     ConditionalJump(Condition, Label),
 }
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Label {
     pub id: i32,
 }

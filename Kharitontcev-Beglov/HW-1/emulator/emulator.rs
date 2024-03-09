@@ -1,5 +1,8 @@
 use crate::inst::Instr;
 
+const MEMORY_SIZE: usize = 1024 * 1024;
+const REGISTERS_SIZE: usize = 32;
+
 struct ALU;
 
 impl ALU {
@@ -9,28 +12,36 @@ impl ALU {
 }
 
 struct Registers {
-    data: [i32; 32],
+    /// Each register is able to store a word
+    data: [i32; REGISTERS_SIZE],
 }
 
 impl Registers {
+    const STACK_POINTER_ID: usize = 31;
     pub fn new() -> Self {
         Self {
-            data: [0; 32]
+            data: [0; REGISTERS_SIZE]
         }
     }
     
     pub fn reset(&mut self) {
         self.data.fill(0)
     }
+    pub fn sp(&self) -> i32 {
+        self.data[Self::STACK_POINTER_ID]
+    }
+    pub fn set_sp(&mut self, new_value: i32) {
+        self.data[Self::STACK_POINTER_ID] = new_value 
+    }
 }
 
 struct Memory {
-    data: [u32; 1024 * 1024],
-    initial_memory: [u32; 1024 * 1024],
+    data: [u8; MEMORY_SIZE],
+    initial_memory: [u8; MEMORY_SIZE],
 }
 
 impl Memory {
-    pub fn new(initial_memory: [u32; 1024 * 1024]) -> Self {
+    pub fn new(initial_memory: [u8; MEMORY_SIZE]) -> Self {
         Self {
             data: initial_memory,
             initial_memory
@@ -50,7 +61,7 @@ pub struct Emulator {
 }
 
 impl Emulator {
-    pub fn new(commands: Vec<Instr>, initial_memory: [u32; 1024 * 1024]) -> Self {
+    pub fn new(commands: Vec<Instr>, initial_memory: [u8; MEMORY_SIZE]) -> Self {
         Self {
             commands,
             pc: 0,

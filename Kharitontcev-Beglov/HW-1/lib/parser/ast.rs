@@ -1,4 +1,4 @@
-#[derive(Eq, PartialEq, Clone, Debug)]
+#[derive(Eq, PartialEq, Clone, Debug, Hash)]
 pub struct Ident(pub String);
 
 pub type Block = Vec<Stmt>;

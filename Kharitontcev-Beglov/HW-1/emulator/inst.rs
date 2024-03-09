@@ -4,36 +4,7 @@ use nom::branch::alt;
 use nom::error::{ErrorKind};
 use nom::multi::many1;
 use nom::sequence::tuple;
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum Instr {
-    R(RType),
-    J(JType),
-    I(IType),
-}
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct RType {
-    pub rs: u8,
-    // 5
-    pub rt: u8,
-    // 5
-    pub rd: u8,
-    // 5
-    pub funct: u8, // 6
-}
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum JType {
-    Jmp { address: u32 },
-}
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum IType {
-    Bne { rs: u8, rt: u8, imm: u16 },
-    Beq { rs: u8, rt: u8, imm: u16 },
-}
-
+use klang_lib::binary::instructions::{Instr, RType, JType, IType};
 type BitStream<'a> = (&'a [u8], usize);
 
 fn parse_r_type(input: BitStream) -> IResult<BitStream, RType> {
@@ -73,6 +44,8 @@ fn parse_i_type(input: BitStream) -> IResult<BitStream, IType> {
     match opcode {
         0x4 => Ok((r, IType::Beq { rs, rt, imm })),
         0x5 => Ok((r, IType::Bne { rs, rt, imm })),
+        0x22 => Ok((r, IType::Lw { rs, rt, imm})),
+        0x2b => Ok((r, IType::Sw { rs, rt, imm})),
         _ => Err(nom::Err::Error(error_position!(input, ErrorKind::Tag)))
     }
 }

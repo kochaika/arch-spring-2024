@@ -55,6 +55,10 @@ We use the same mapping for the instruction, but just reduced supported instruct
 `$rd = !($rs | $rt)`, `funct = 39`
 ## slt
 `$rd = $rs < $rt ? 1 : 0`, `funct = 42`
+## print
+Special pseudo-instruction, that prints the source register. All other parameters is unused.
+
+`print $rs`, `funct = 0`
 
 # J-Type instruction
 ```
@@ -74,4 +78,14 @@ if ($rs != $rt)
     PC = PC + 4 + SignExt({imm, 00}) 
 ```
 `opcode = 5` 
+
+## lw
+```
+$rt = Mem($rs + imm)
+```
+`opcode = 34`
+## sw
+```
+Mem($rs + imm) = $rt
+```
 
