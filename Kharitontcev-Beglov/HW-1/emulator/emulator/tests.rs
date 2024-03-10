@@ -262,7 +262,7 @@ fn test_fetch_decode(fsm: &mut FSM, opcode: u8, funct: u8) {
     assert_eq!(true, fetch.ir_write);
     assert_eq!(true, fetch.pc_write);
     fsm.set_instruction(opcode, funct);
-    
+
     assert_eq!(FSMState::Decode, fsm.current_state);
     let decode = fsm.get_decision();
     assert_eq!(false, decode.alu_src_a_reg);
@@ -322,12 +322,12 @@ fn fsm_sw() {
     assert_eq!(true, memory_compute.alu_src_a_reg);
     assert_eq!(2, memory_compute.alu_source_b);
     assert_eq!(32, memory_compute.alu_control);
-    
+
     assert_eq!(FSMState::ITypeMemoryWrite, fsm.current_state);
     let memory_write = fsm.get_decision();
     assert_eq!(true, memory_write.iord);
     assert_eq!(true, memory_write.mem_write);
-    
+
     assert_eq!(FSMState::Fetch, fsm.current_state);
 }
 
@@ -340,11 +340,11 @@ fn fsm_lw() {
     assert_eq!(true, memory_compute.alu_src_a_reg);
     assert_eq!(2, memory_compute.alu_source_b);
     assert_eq!(32, memory_compute.alu_control);
-    
+
     assert_eq!(FSMState::ITypeMemoryRead, fsm.current_state);
     let memory_read = fsm.get_decision();
     assert_eq!(true, memory_read.iord);
-    
+
     assert_eq!(FSMState::ITypeReadWriteback, fsm.current_state);
     let memory_writeback = fsm.get_decision();
     assert_eq!(false, memory_writeback.reg_dst);
@@ -359,13 +359,13 @@ fn fsm_r_type() {
     let mut fsm = FSM::new();
     for funct in [32u8, 34, 36, 37, 39] {
         test_fetch_decode(&mut fsm, 0, funct);
-        
+
         assert_eq!(FSMState::RTypeExecute, fsm.current_state);
         let execute = fsm.get_decision();
         assert_eq!(true, execute.alu_src_a_reg);
         assert_eq!(0, execute.alu_source_b);
         assert_eq!(funct, execute.alu_control);
-        
+
         assert_eq!(FSMState::RTypeALUWriteBack, fsm.current_state);
         let writeback = fsm.get_decision();
         assert_eq!(true, writeback.reg_dst);
