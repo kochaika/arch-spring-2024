@@ -40,7 +40,8 @@ fn main() -> io::Result<()> {
     let mut memory_file = File::open(cli.memory)?;
     let mut memory_buffer = Vec::new();
     memory_file.read_to_end(&mut memory_buffer)?;
-    let mut memory = [0u8; MEMORY_SIZE];
+    let mut memory = Vec::new();
+    memory.resize(MEMORY_SIZE, 0);
     memory[0..memory_buffer.len()].copy_from_slice(&memory_buffer);
     
     let mut emulator = Emulator::new(code_buffer, memory);
