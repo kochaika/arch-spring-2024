@@ -52,10 +52,10 @@ fn transform_j_type(j_type: &JType) -> u32 {
 fn transform_i_type(i_type: &IType) -> u32 {
     let (opcode, rs, rt, imm) = match i_type {
         IType::Bne { rs, rt, imm } => {
-            (4u32, truncate_register(*rs) as u32, truncate_register(*rt) as u32, *imm as u32)
+            (5u32, truncate_register(*rs) as u32, truncate_register(*rt) as u32, *imm as u32)
         }
         IType::Beq { rs, rt, imm } => {
-            (5u32, truncate_register(*rs) as u32, truncate_register(*rt) as u32, *imm as u32)
+            (4u32, truncate_register(*rs) as u32, truncate_register(*rt) as u32, *imm as u32)
         }
         IType::Sw { rs, rt, imm } => {
             (43u32, truncate_register(*rs) as u32, truncate_register(*rt) as u32, *imm as u32)

@@ -30,8 +30,14 @@ impl AstTransformer {
                 match ops {
                     PrefixOps::BitwiseNot => {
                         let mut left = self.transform_expr_to_sm(expr.as_ref());
-                        left.push_back(StackCommand::Const(-1));
+                        left.push_back(StackCommand::Const(0));
                         left.push_back(StackCommand::Op(Ops::BitwiseNor));
+                        left
+                    },
+                    PrefixOps::UnaryMinus => {
+                        let mut left = self.transform_expr_to_sm(expr.as_ref());
+                        left.push_back(StackCommand::Const(0));
+                        left.push_back(StackCommand::Op(Ops::Sub));
                         left
                     }
                 }

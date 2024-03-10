@@ -90,6 +90,7 @@ fn parse_prefix_expr(input: Tokens) -> IResult<Tokens, Expr> {
         let (i2, e) = parse_atom_expr(remaining)?;
         match token.tok[0].clone() {
             Token::Tilde => Ok((i2, Expr::PrefixOperation(PrefixOps::BitwiseNot, Box::new(e)))),
+            Token::Minus => Ok((i2, Expr::PrefixOperation(PrefixOps::UnaryMinus, Box::new(e)))),
             _ => Err(Err::Error(error_position!(input, ErrorKind::Tag))),
         }
     }

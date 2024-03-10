@@ -105,6 +105,7 @@ struct FSM {
     funct: u8,
 }
 
+#[derive(Copy, Clone, Debug)]
 struct FSMDecision {
     pub iord: bool,
     pub mem_write: bool,
@@ -139,7 +140,7 @@ impl FSM {
             FSMState::Fetch => {
                 self.current_state = FSMState::Decode;
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: false,
                     alu_source_b: 1,
                     pc_source: 0,
@@ -165,7 +166,7 @@ impl FSM {
                     _ => panic!("Invalid opcode {}!", self.opcode)
                 };
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: false,
                     alu_source_b: 3,
                     pc_source: 0,
@@ -184,7 +185,7 @@ impl FSM {
                 self.current_state = if self.opcode == 34
                 { FSMState::ITypeMemoryRead } else { FSMState::ITypeMemoryWrite };
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: true,
                     alu_source_b: 2,
                     pc_source: 0,
@@ -220,7 +221,7 @@ impl FSM {
             FSMState::ITypeReadWriteback => {
                 self.current_state = FSMState::Fetch;
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: true,
                     alu_source_b: 3,
                     pc_source: 0,
@@ -256,7 +257,7 @@ impl FSM {
             FSMState::RTypeExecute => {
                 self.current_state = FSMState::RTypeALUWriteBack;
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: true,
                     alu_source_b: 0,
                     pc_source: 0,
@@ -274,7 +275,7 @@ impl FSM {
             FSMState::RTypeALUWriteBack => {
                 self.current_state = FSMState::Fetch;
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: true,
                     alu_source_b: 0,
                     pc_source: 0,
@@ -292,7 +293,7 @@ impl FSM {
             FSMState::Branch => {
                 self.current_state = FSMState::Fetch;
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: true,
                     alu_source_b: 0,
                     pc_source: 1,
@@ -310,7 +311,7 @@ impl FSM {
             FSMState::JType => {
                 self.current_state = FSMState::Fetch;
                 FSMDecision {
-                    iord: true,
+                    iord: false,
                     alu_src_a_reg: false,
                     alu_source_b: 0,
                     pc_source: 2,
@@ -328,7 +329,7 @@ impl FSM {
         }
     }
     pub fn is_print(&self) -> bool {
-        self.opcode == 0 && self.opcode == 0
+        self.opcode == 0 && self.funct == 0
     }
 }
 
@@ -377,9 +378,14 @@ impl Emulator {
     }
 
     pub fn clock(&mut self) -> bool {
+        // println!("Clock. PC={}", self.pc);
+        // println!("FSMState: {:?}", self.fsm.current_state);
+        // println!("Current instruction: {:#032b}. Opcode={}, funct={}", self.current_instruction, self.fsm.opcode, self.fsm.funct);
         let decision = self.fsm.get_decision();
+        // println!("FSM Decision: {:?}", decision);
+        // println!("operand_a={}, operand_b={}, alu_output={}, data={}", self.operand_a, self.operand_b, self.alu_output, self.data);
 
-        let address = if decision.iord {
+        let address = if !decision.iord {
             ReadMemoryFrom::Instruction(self.pc)
         } else {
             ReadMemoryFrom::Data(self.alu_output as usize)
@@ -388,11 +394,14 @@ impl Emulator {
         if decision.mem_write {
             match address {
                 ReadMemoryFrom::Instruction(_) => {}
-                ReadMemoryFrom::Data(address) => self.memory.set_word_at_position(address, self.operand_b)
+                ReadMemoryFrom::Data(address) => {
+                    // println!("mem[{}]={}", address, self.operand_b);
+                    self.memory.set_word_at_position(address, self.operand_b)
+                }
             }
         }
 
-        self.data = self.read(&address);
+        let read = self.read(&address);
 
         if decision.ir_write {
             self.current_instruction = self.read(&address) as u32;
@@ -404,8 +413,10 @@ impl Emulator {
             let rt = (self.current_instruction >> 16) & 0x1f;
             self.operand_a = self.registers.get_value(rs as usize);
             self.operand_b = self.registers.get_value(rt as usize);
+            // println!("Current instruction (pc={}): {:#034b}. Opcode={}, funct={}, rs={}, rt={}", self.pc, self.current_instruction, self.fsm.opcode, self.fsm.funct, rs, rt);
             if self.fsm.is_print() {
-                println!("Register: ${}={}", rs, self.operand_a);
+                println!("{}", self.operand_a);
+                // println!("Register: ${}={}", rs, self.operand_a);
                 self.fsm.reset();
             }
         }
@@ -413,6 +424,7 @@ impl Emulator {
         if decision.reg_write {
             let data = if decision.mem_to_reg { self.data } else { self.alu_output };
             let res_reg = if decision.reg_dst { (self.current_instruction >> 11) & 0x1f } else { (self.current_instruction >> 16) & 0x1f };
+            // println!("new reg #{}={}", res_reg, data);
             self.registers.set_value(res_reg as usize, data);
         }
 
@@ -429,23 +441,34 @@ impl Emulator {
         let pc_en = (decision.branch & (self.alu.get_zero_flag() ^ decision.negate_zero)) | (decision.pc_write);
         if pc_en {
             self.pc = match decision.pc_source {
-                0 => self.alu_output as usize,
-                1 => result as usize,
+                0 => result as usize,
+                1 => self.alu_output as usize,
                 2 => ((self.pc >> 28) << 28) | ((self.current_instruction as usize & 0x1ffffff) << 2),
                 _ => panic!("Invalid PC source state: {}", decision.pc_source)
             };
+            // println!("new pc={}, branch={}, zero={}, negate_zero={}", self.pc,decision.branch, self.alu.get_zero_flag(), decision.negate_zero);;
         }
         self.alu_output = result;
-        self.pc >= self.commands.len()
+        self.data = read;
+        // println!();
+        self.pc >= self.commands.len() && self.fsm.current_state == FSMState::Fetch
     }
 
     fn read(&self, address: &ReadMemoryFrom) -> i32 {
         match *address {
             ReadMemoryFrom::Instruction(address) => {
+                if address >= self.commands.len() {
+                    assert_ne!(FSMState::Decode, self.fsm.current_state);
+                    return 0 // Corner case: if we are reading this, that should be not instruction reading
+                }
                 let slice = &self.commands[address..(address + 4)];
                 i32::from_be_bytes(slice.try_into().unwrap())
             }
-            ReadMemoryFrom::Data(address) => self.memory.get_word_from_position(address)
+            ReadMemoryFrom::Data(address) => {
+                // print!("readind mem[{}]=", address);
+                // println!("{}", self.memory.get_word_from_position(address));
+                self.memory.get_word_from_position(address)
+            }
         }
     }
 }

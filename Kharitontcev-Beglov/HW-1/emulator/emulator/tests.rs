@@ -254,7 +254,7 @@ fn memory_reset() {
 fn test_fetch_decode(fsm: &mut FSM, opcode: u8, funct: u8) {
     assert_eq!(FSMState::Fetch, fsm.current_state);
     let fetch = fsm.get_decision();
-    assert_eq!(true, fetch.iord);
+    assert_eq!(false, fetch.iord);
     assert_eq!(false, fetch.alu_src_a_reg);
     assert_eq!(1, fetch.alu_source_b);
     assert_eq!(32, fetch.alu_control);

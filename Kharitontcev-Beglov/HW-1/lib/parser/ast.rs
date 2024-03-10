@@ -32,6 +32,7 @@ pub enum Ops {
 #[derive(PartialEq, Clone, Debug, Ord, PartialOrd, Eq)]
 pub enum PrefixOps {
     BitwiseNot,
+    UnaryMinus
 }
 
 #[derive(PartialEq, PartialOrd, Debug, Clone)]
