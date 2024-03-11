@@ -1,0 +1,18 @@
+var a;
+var b;
+a = 10;
+b = a + 2;
+var c;
+c = 0;
+while (a >= 0) {
+    a = a - 1;
+    c = c + b;
+    b = b & (b - 1);
+    if (b == 0) {
+        b = c + a;
+    }
+}
+print(c);
+print(b);
+
+

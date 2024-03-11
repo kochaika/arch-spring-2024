@@ -1,0 +1,21 @@
+var a;
+var b;
+a = 10;
+b = a + 2;
+var c;
+if (a > b) {
+    c = a & b;
+} else {
+    c = a | b;
+}
+var d;
+d = 1;
+if (c == 0) {
+    d = d - 10;
+}
+print(c);
+print(d);
+if (d + c > 0) {
+    print((d + c) & 7);
+}
+
