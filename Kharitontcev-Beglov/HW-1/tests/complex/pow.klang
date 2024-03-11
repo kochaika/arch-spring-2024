@@ -1,0 +1,18 @@
+{
+    base = 3
+    power = 10
+    answer = 1
+    while (power) {
+        tmp = base - 1
+        ttmp = answer
+        while (tmp) {
+            answer = answer + ttmp
+            tmp = tmp - 1
+        }
+        power = power - 1
+        if (power & 1) {
+            print(answer)
+        }
+    }
+    print(answer)
+}
