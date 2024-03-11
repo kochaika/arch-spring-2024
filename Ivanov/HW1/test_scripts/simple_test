@@ -1,0 +1,15 @@
+set a 44
+set b 22
+set c 2147483648
+set d 0
+add d b
+sub d a
+and d c
+jmp d 5
+str a 200
+str b 201
+ld a 201
+ld b 200
+sub a b
+jmp a -10
+print b b
