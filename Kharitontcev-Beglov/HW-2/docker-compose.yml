@@ -1,0 +1,9 @@
+version: '2'
+services:
+  simulavr:
+    build: .
+    container_name: simulavr
+    image: simulavr-img
+    volumes:
+      - ./avr-project:/avr-project
+    working_dir: /avr-project
