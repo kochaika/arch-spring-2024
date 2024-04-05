@@ -38,31 +38,157 @@ static void low_task() {
   }
 }
 
-static void low_task2() {
-  while (1) {
-    PORTB = 1;
-  }
-}
-
-#define STACK_SIZE 14
+#define STACK_SIZE 46
 uint8_t stack_task1[STACK_SIZE];
 uint8_t stack_task2[STACK_SIZE];
 
 uint8_t cur_ctx = 0;
 uint8_t first_switch = 1;
 
-volatile void save_stack(uint8_t *dest) {
+/* inline actually makes a difference.
+ * Thnak you, compiler, for listening to me.
+ */
+volatile inline void save_stack(uint8_t *dest) {
+  asm volatile("push r0  \n\t"
+               "push r1  \n\t"
+               "push r2  \n\t"
+               "push r3  \n\t"
+               "push r4  \n\t"
+               "push r5  \n\t"
+               "push r6  \n\t"
+               "push r7  \n\t"
+               "push r8  \n\t"
+               "push r9  \n\t"
+               "push r10 \n\t"
+               "push r11 \n\t"
+               "push r12 \n\t"
+               "push r13 \n\t"
+               "push r14 \n\t"
+               "push r15 \n\t"
+               "push r16 \n\t"
+               "push r17 \n\t"
+               "push r18 \n\t"
+               "push r19 \n\t"
+               "push r20 \n\t"
+               "push r21 \n\t"
+               "push r22 \n\t"
+               "push r23 \n\t"
+               "push r24 \n\t"
+               "push r25 \n\t"
+               "push r26 \n\t"
+               "push r27 \n\t"
+               "push r28 \n\t"
+               "push r29 \n\t"
+               "push r30 \n\t"
+               "push r31 \n\t");
   uint8_t *sp = SP;
   for (int i = 0; i < STACK_SIZE; i++) {
     dest[i] = *(sp + i);
   }
+  asm volatile("pop r31  \n\t"
+               "pop r30  \n\t"
+               "pop r29  \n\t"
+               "pop r28  \n\t"
+               "pop r27  \n\t"
+               "pop r26  \n\t"
+               "pop r25  \n\t"
+               "pop r24  \n\t"
+               "pop r23  \n\t"
+               "pop r22  \n\t"
+               "pop r21  \n\t"
+               "pop r20  \n\t"
+               "pop r19  \n\t"
+               "pop r18  \n\t"
+               "pop r17  \n\t"
+               "pop r16  \n\t"
+               "pop r15  \n\t"
+               "pop r14  \n\t"
+               "pop r13  \n\t"
+               "pop r12  \n\t"
+               "pop r11  \n\t"
+               "pop r10  \n\t"
+               "pop r9   \n\t"
+               "pop r8   \n\t"
+               "pop r7   \n\t"
+               "pop r6   \n\t"
+               "pop r5   \n\t"
+               "pop r4   \n\t"
+               "pop r3   \n\t"
+               "pop r2   \n\t"
+               "pop r1   \n\t"
+               "pop r0   \n\t");
 }
 
-volatile void restore_stack(uint8_t *src) {
+volatile inline void restore_stack(uint8_t *src) {
+  /* Artificially increase the stack pointer. */
+  asm volatile("push r0  \n\t"
+               "push r1  \n\t"
+               "push r2  \n\t"
+               "push r3  \n\t"
+               "push r4  \n\t"
+               "push r5  \n\t"
+               "push r6  \n\t"
+               "push r7  \n\t"
+               "push r8  \n\t"
+               "push r9  \n\t"
+               "push r10 \n\t"
+               "push r11 \n\t"
+               "push r12 \n\t"
+               "push r13 \n\t"
+               "push r14 \n\t"
+               "push r15 \n\t"
+               "push r16 \n\t"
+               "push r17 \n\t"
+               "push r18 \n\t"
+               "push r19 \n\t"
+               "push r20 \n\t"
+               "push r21 \n\t"
+               "push r22 \n\t"
+               "push r23 \n\t"
+               "push r24 \n\t"
+               "push r25 \n\t"
+               "push r26 \n\t"
+               "push r27 \n\t"
+               "push r28 \n\t"
+               "push r29 \n\t"
+               "push r30 \n\t"
+               "push r31 \n\t");
   uint8_t *sp = SP;
   for (int i = 0; i < STACK_SIZE; i++) {
     *(sp + i) = src[i];
   }
+  asm volatile("pop r31  \n\t"
+               "pop r30  \n\t"
+               "pop r29  \n\t"
+               "pop r28  \n\t"
+               "pop r27  \n\t"
+               "pop r26  \n\t"
+               "pop r25  \n\t"
+               "pop r24  \n\t"
+               "pop r23  \n\t"
+               "pop r22  \n\t"
+               "pop r21  \n\t"
+               "pop r20  \n\t"
+               "pop r19  \n\t"
+               "pop r18  \n\t"
+               "pop r17  \n\t"
+               "pop r16  \n\t"
+               "pop r15  \n\t"
+               "pop r14  \n\t"
+               "pop r13  \n\t"
+               "pop r12  \n\t"
+               "pop r11  \n\t"
+               "pop r10  \n\t"
+               "pop r9   \n\t"
+               "pop r8   \n\t"
+               "pop r7   \n\t"
+               "pop r6   \n\t"
+               "pop r5   \n\t"
+               "pop r4   \n\t"
+               "pop r3   \n\t"
+               "pop r2   \n\t"
+               "pop r1   \n\t"
+               "pop r0   \n\t");
 }
 
 ISR(TIMER0_COMPA_vect) {
