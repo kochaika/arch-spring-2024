@@ -4,6 +4,8 @@ services:
     build: .
     container_name: simulavr
     image: simulavr-img
+    ports:
+      - "1212:1212"
     volumes:
       - ./avr-project:/avr-project
     working_dir: /avr-project
