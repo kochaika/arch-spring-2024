@@ -1,0 +1,29 @@
+make[1]: Entering directory '/avr-project'
+simulavr -d atmega328 -f simple.elf -W 0x20,- -R 0x22,- -m 100000000
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+1
+Run finished.  Terminated at 100000000 ns (simulated) and 
+400001 cpu cycles
+make[1]: Leaving directory '/avr-project'
